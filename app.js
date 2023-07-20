@@ -39,6 +39,18 @@ const passport_init = require("./passport/passport_init");
 passport_init();
 app.use(passport.initialize());
 app.use(passport.session());
+const cookieParser = require("cookie-parser");
+const csrf = require("host-csrf");
+app.use(cookieParser(process.env.SESSION_SECRET));
+let csrf_development_mode = true;
+if (app.get("env") === "production") {
+  csrf_development_mode = false;
+  app.set("trust proxy", 1);
+}
+const csrf_options = {
+  development_mode: csrf_development_mode,
+};
+app.use(csrf(csrf_options));
 app.use(require("./middleware/storeLocals"));
 app.get("/", (req, res) => {
   res.render("index");
