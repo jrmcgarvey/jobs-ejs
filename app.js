@@ -60,13 +60,14 @@ app.use("/session", sessionRoutes);
 const secretWordRouter = require('./routes/secretWord');
 const auth = require('./middleware/auth');
 app.use("/secretWord", auth, secretWordRouter);
+const jobRouter = require('./routes/jobs')
+app.use("/jobs",auth,jobRouter)
 
 app.use((req, res) => {
-  res.status(404).send(`That page (${req.url}) was not found.`);
+  res.status(404).send(`That page (${req.method} ${req.url}) was not found.`);
 });
 
 app.use((err, req, res, next) => {
-  console.log("got here");
   res.status(500).send(err.message);
   console.log(err);
 });

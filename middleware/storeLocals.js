@@ -1,6 +1,7 @@
 const storeLocals = (req, res, next) => {
   if (req.user) {
     res.locals.user = req.user;
+    console.log(req.user)
   } else {
     res.locals.user = null;
   }
