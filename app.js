@@ -1,5 +1,9 @@
 const express = require("express");
 require("express-async-errors");
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimiter = require('express-rate-limit');
+
 
 const app = express();
 
@@ -45,8 +49,16 @@ app.use(cookieParser(process.env.SESSION_SECRET));
 let csrf_development_mode = true;
 if (app.get("env") === "production") {
   csrf_development_mode = false;
-  app.set("trust proxy", 1);
 }
+app.set('trust proxy', 1);
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+  })
+);
+app.use(helmet());
+app.use(xss());
 const csrf_options = {
   development_mode: csrf_development_mode,
 };
